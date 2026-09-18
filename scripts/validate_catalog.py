@@ -84,6 +84,18 @@ def check_secret_patterns(path: Path, text: str, secret_file_hits: set[str]) -> 
 
 
 def iter_tracked_files() -> list[Path]:
+    fallback_globs = [
+        "catalog.json",
+        "README.md",
+        "NOTICE.md",
+        "UPSTREAMS.md",
+        "docs/**/*.md",
+        "context/*.template.md",
+        "skills/**/SKILL.md",
+        "scripts/**/*.py",
+        "tests/**/*.py",
+        ".github/workflows/*.yml",
+    ]
     try:
         result = subprocess.run(
             ["git", "-C", str(ROOT), "ls-files"],
@@ -92,7 +104,12 @@ def iter_tracked_files() -> list[Path]:
             check=True,
         )
     except (subprocess.CalledProcessError, FileNotFoundError):
-        return [p for p in ROOT.rglob("*") if p.is_file()]
+        fallback_paths: set[Path] = set()
+        for pattern in fallback_globs:
+            for path in ROOT.glob(pattern):
+                if path.is_file():
+                    fallback_paths.add(path)
+        return sorted(fallback_paths)
 
     paths: list[Path] = []
     for raw in result.stdout.splitlines():
