@@ -33,36 +33,43 @@ def slugify(value: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", value.lower()).strip("-")
 
 
-def parse_frontmatter(text: str) -> dict[str, str]:
+def parse_frontmatter(text: str) -> dict[str, object]:
     if not text.startswith("---\n"):
         return {}
     parts = text.split("\n---\n", 1)
     if len(parts) != 2:
         return {}
     fm_block = parts[0].replace("---\n", "", 1)
-    parsed: dict[str, str] = {}
+    parsed: dict[str, object] = {}
+    current_key = ""
     for line in fm_block.splitlines():
+        if line.startswith("  - ") and current_key:
+            current_value = parsed.get(current_key, [])
+            if isinstance(current_value, list):
+                current_value.append(line.replace("  - ", "", 1).strip())
+                parsed[current_key] = current_value
+            continue
         if ":" not in line:
             continue
         key, value = line.split(":", 1)
-        parsed[key.strip()] = value.strip()
+        key = key.strip()
+        value = value.strip()
+        current_key = key
+        if value == "":
+            parsed[key] = []
+        else:
+            parsed[key] = value
     return parsed
 
 
-def check_secret_patterns(path: Path, text: str, errors: list[str]) -> None:
+def check_secret_patterns(path: Path, text: str, secret_file_hits: set[str]) -> None:
     for pattern in SECRET_PATTERNS:
         if re.search(pattern, text):
-            errors.append(f"{path}: potential secret pattern matched: {pattern}")
+            secret_file_hits.add(str(path))
+            return
 
 
-def sanitize_for_output(value: str) -> str:
-    sanitized = value
-    for pattern in SECRET_PATTERNS:
-        sanitized = re.sub(pattern, "[REDACTED]", sanitized)
-    return sanitized
-
-
-def scan_repo_for_secrets(errors: list[str]) -> None:
+def scan_repo_for_secrets(secret_file_hits: set[str]) -> None:
     exclude_dirs = {".git", "__pycache__"}
     exclude_files = {".pyc"}
     for path in ROOT.rglob("*"):
@@ -76,11 +83,12 @@ def scan_repo_for_secrets(errors: list[str]) -> None:
             text = path.read_text(encoding="utf-8")
         except UnicodeDecodeError:
             continue
-        check_secret_patterns(path, text, errors)
+        check_secret_patterns(path, text, secret_file_hits)
 
 
 def main() -> int:
     errors: list[str] = []
+    secret_file_hits: set[str] = set()
 
     if not CATALOG_PATH.exists():
         print("ERROR: catalog.json not found")
@@ -126,7 +134,6 @@ def main() -> int:
             continue
 
         text = skill_path.read_text(encoding="utf-8")
-        check_secret_patterns(skill_path, text, errors)
 
         frontmatter = parse_frontmatter(text)
         if not frontmatter:
@@ -154,12 +161,20 @@ def main() -> int:
             if heading not in text:
                 errors.append(f"{path_value}: missing required heading '{heading}'")
 
-    scan_repo_for_secrets(errors)
+    scan_repo_for_secrets(secret_file_hits)
+    if secret_file_hits:
+        errors.append(
+            f"potential secret patterns found in {len(secret_file_hits)} file(s); inspect listed paths"
+        )
 
     if errors:
         print("VALIDATION FAILED")
         for err in errors:
-            print(f"- {sanitize_for_output(err)}")
+            print(f"- {err}")
+        if secret_file_hits:
+            print("- files with potential secret patterns:")
+            for path in sorted(secret_file_hits):
+                print(f"  - {path}")
         return 1
 
     print("VALIDATION PASSED")

@@ -3,7 +3,7 @@
 ## Skill authoring standard
 Each skill lives in its own folder with `SKILL.md` and must include:
 - Frontmatter: `name`, `description`, `version`, `tags`
-- Headings: Purpose, Use when, Required inputs, Safety/authority, Workflow, Output format, Quality checks
+- Headings: Purpose, Use when, Required inputs, Safety/authority, Workflow, Output format, Quality checks, Related skills
 - Related skills by exact skill name
 
 ## Authoring process
