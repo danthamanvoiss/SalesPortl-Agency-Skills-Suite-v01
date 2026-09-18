@@ -19,6 +19,8 @@ Load a minimal set per agent/task:
 - Avoid loading the entire collection into one context window
 
 ## Module map
+`catalog.json` is the machine-readable source of truth for this inventory and skill metadata.
+
 | Module | Skills | Purpose |
 |---|---:|---|
 | core | 1 | Routing, scope control, approved-claims guardrails |

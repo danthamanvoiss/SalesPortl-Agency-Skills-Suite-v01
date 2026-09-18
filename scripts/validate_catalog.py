@@ -22,7 +22,7 @@ REQUIRED_HEADINGS = [
     "## Related skills",
 ]
 SECRET_PATTERNS = [
-    r"(?i)api[_-]?key\s*[:=]\s*[\"']?[A-Za-z0-9_\-]{16,}",
+    r"(?i)api[_-]?key\s*[:=]\s*[\"']?(?=[A-Za-z0-9_\-]{16,})(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z0-9_\-]+",
     r"\bghp_[A-Za-z0-9]{20,}\b",
     r"\bsk_(live|test)_[A-Za-z0-9]{16,}\b",
     r"-----BEGIN (RSA|EC|OPENSSH|DSA) PRIVATE KEY-----",
@@ -44,6 +44,7 @@ def parse_inline_list(value: str) -> list[str] | None:
 
 
 def parse_frontmatter(text: str) -> dict[str, object]:
+    text = text.replace("\r\n", "\n")
     if not text.startswith("---\n"):
         return {}
     parts = text.split("\n---\n", 1)
@@ -126,6 +127,9 @@ def main() -> int:
     seen_names = set()
 
     for idx, entry in enumerate(skills, start=1):
+        if not isinstance(entry, dict):
+            errors.append(f"catalog.json skill[{idx}]: entry must be an object")
+            continue
         missing_required_fields = False
         for field in ("name", "module", "description", "tags", "version", "path"):
             if field not in entry:
@@ -184,8 +188,9 @@ def main() -> int:
         if not isinstance(tags, list):
             errors.append(f"{path_value}: frontmatter 'tags' must be a list")
 
+        heading_lines = {line.strip() for line in text.replace("\r\n", "\n").split("\n")}
         for heading in REQUIRED_HEADINGS:
-            if heading not in text:
+            if heading not in heading_lines:
                 errors.append(f"{path_value}: missing required heading '{heading}'")
 
     scan_repo_for_secrets(secret_file_hits)
