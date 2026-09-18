@@ -1,0 +1,236 @@
+{
+  "suite": "SalesPortl Agency Skills Suite",
+  "version": "0.1.0",
+  "total_skills": 18,
+  "skills": [
+    {
+      "name": "agency-router",
+      "module": "core",
+      "description": "Route requests to 1\u20133 specialist skills with scope, data, and authority checks.",
+      "tags": [
+        "core",
+        "routing",
+        "safety",
+        "token-efficiency"
+      ],
+      "version": "0.1.0",
+      "path": "skills/core/agency-router/SKILL.md"
+    },
+    {
+      "name": "lead-qualification",
+      "module": "sales",
+      "description": "Run BANT/MEDDIC-inspired qualification with evidence vs unknown separation.",
+      "tags": [
+        "sales",
+        "qualification",
+        "bant",
+        "meddic"
+      ],
+      "version": "0.1.0",
+      "path": "skills/sales/lead-qualification/SKILL.md"
+    },
+    {
+      "name": "discovery-call-prep",
+      "module": "sales",
+      "description": "Prepare discovery agenda, hypotheses, questions, and risks without invented prospect facts.",
+      "tags": [
+        "sales",
+        "discovery",
+        "prep"
+      ],
+      "version": "0.1.0",
+      "path": "skills/sales/discovery-call-prep/SKILL.md"
+    },
+    {
+      "name": "outreach-sequence-draft",
+      "module": "sales",
+      "description": "Create compliant cold/warm/referral outreach drafts with opt-out awareness.",
+      "tags": [
+        "sales",
+        "outreach",
+        "email",
+        "draft-only"
+      ],
+      "version": "0.1.0",
+      "path": "skills/sales/outreach-sequence-draft/SKILL.md"
+    },
+    {
+      "name": "proposal-scope-draft",
+      "module": "sales",
+      "description": "Draft scope, assumptions, exclusions, milestones, and approval questions.",
+      "tags": [
+        "sales",
+        "proposal",
+        "scoping",
+        "draft-only"
+      ],
+      "version": "0.1.0",
+      "path": "skills/sales/proposal-scope-draft/SKILL.md"
+    },
+    {
+      "name": "salesportl-account-handoff",
+      "module": "sales",
+      "description": "Produce structured SalesPortl handoff notes as draft CRM-ready content.",
+      "tags": [
+        "sales",
+        "crm",
+        "handoff",
+        "draft-only"
+      ],
+      "version": "0.1.0",
+      "path": "skills/sales/salesportl-account-handoff/SKILL.md"
+    },
+    {
+      "name": "website-marketing-audit",
+      "module": "marketing",
+      "description": "Audit messaging, trust, CTA, conversion, SEO, and measurement with evidence table.",
+      "tags": [
+        "marketing",
+        "audit",
+        "website",
+        "seo"
+      ],
+      "version": "0.1.0",
+      "path": "skills/marketing/website-marketing-audit/SKILL.md"
+    },
+    {
+      "name": "offer-positioning",
+      "module": "marketing",
+      "description": "Define ICP, pains, outcomes, differentiators, proof needs, and messaging pillars.",
+      "tags": [
+        "marketing",
+        "positioning",
+        "messaging"
+      ],
+      "version": "0.1.0",
+      "path": "skills/marketing/offer-positioning/SKILL.md"
+    },
+    {
+      "name": "campaign-plan",
+      "module": "marketing",
+      "description": "Build objective/audience/channel/asset/measurement plan with budget assumptions.",
+      "tags": [
+        "marketing",
+        "campaign",
+        "planning",
+        "draft-only"
+      ],
+      "version": "0.1.0",
+      "path": "skills/marketing/campaign-plan/SKILL.md"
+    },
+    {
+      "name": "content-calendar",
+      "module": "marketing",
+      "description": "Generate a 30-day content plan from provided business context and goals.",
+      "tags": [
+        "marketing",
+        "content",
+        "calendar",
+        "draft-only"
+      ],
+      "version": "0.1.0",
+      "path": "skills/marketing/content-calendar/SKILL.md"
+    },
+    {
+      "name": "landing-page-cro-review",
+      "module": "marketing",
+      "description": "Review conversion friction, hierarchy, proof, CTA, and experiment backlog.",
+      "tags": [
+        "marketing",
+        "cro",
+        "landing-page",
+        "experiments"
+      ],
+      "version": "0.1.0",
+      "path": "skills/marketing/landing-page-cro-review/SKILL.md"
+    },
+    {
+      "name": "seo-geo-opportunity-audit",
+      "module": "seo-geo",
+      "description": "Read-only SEO/GEO opportunity assessment across technical, content, entity, citation readiness.",
+      "tags": [
+        "seo",
+        "geo",
+        "audit",
+        "read-only"
+      ],
+      "version": "0.1.0",
+      "path": "skills/seo-geo/seo-geo-opportunity-audit/SKILL.md"
+    },
+    {
+      "name": "ai-citability-content-review",
+      "module": "seo-geo",
+      "description": "Improve direct-answer, evidence-rich, self-contained content without fake citations.",
+      "tags": [
+        "seo",
+        "geo",
+        "content",
+        "citability"
+      ],
+      "version": "0.1.0",
+      "path": "skills/seo-geo/ai-citability-content-review/SKILL.md"
+    },
+    {
+      "name": "local-visibility-review",
+      "module": "seo-geo",
+      "description": "Review local entity consistency and GBP readiness using supplied data only.",
+      "tags": [
+        "seo",
+        "local",
+        "entity",
+        "read-only"
+      ],
+      "version": "0.1.0",
+      "path": "skills/seo-geo/local-visibility-review/SKILL.md"
+    },
+    {
+      "name": "client-onboarding-plan",
+      "module": "client-success",
+      "description": "Build kickoff plan, access checklist, timeline, communication rhythm, and success measures.",
+      "tags": [
+        "client-success",
+        "onboarding",
+        "delivery"
+      ],
+      "version": "0.1.0",
+      "path": "skills/client-success/client-onboarding-plan/SKILL.md"
+    },
+    {
+      "name": "monthly-client-review",
+      "module": "client-success",
+      "description": "Create monthly narrative separating supplied metrics, interpretation, unknowns, and next actions.",
+      "tags": [
+        "client-success",
+        "reporting",
+        "review"
+      ],
+      "version": "0.1.0",
+      "path": "skills/client-success/monthly-client-review/SKILL.md"
+    },
+    {
+      "name": "retention-and-upsell-review",
+      "module": "client-success",
+      "description": "Evaluate account health, risk, value delivery, and expansion hypotheses safely.",
+      "tags": [
+        "client-success",
+        "retention",
+        "upsell"
+      ],
+      "version": "0.1.0",
+      "path": "skills/client-success/retention-and-upsell-review/SKILL.md"
+    },
+    {
+      "name": "affiliate-enablement",
+      "module": "partners",
+      "description": "Draft partner onboarding, positioning, referral process, and compliance guardrails.",
+      "tags": [
+        "partners",
+        "affiliate",
+        "enablement",
+        "draft-only"
+      ],
+      "version": "0.1.0",
+      "path": "skills/partners/affiliate-enablement/SKILL.md"
+    }
+  ]
+}

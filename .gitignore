@@ -1,0 +1,19 @@
+# Private filled context
+context/BRAND-CONTEXT.md
+context/CLIENT-CONTEXT.md
+
+# Sensitive/env
+.env
+.env.*
+
+# Customer/private exports and generated reports
+exports/
+customer-exports/
+reports/generated/
+*.csv
+*.xlsx
+*.jsonl
+
+# Python cache
+__pycache__/
+*.pyc
