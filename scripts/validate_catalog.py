@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -82,12 +83,32 @@ def check_secret_patterns(path: Path, text: str, secret_file_hits: set[str]) -> 
             return
 
 
+def iter_tracked_files() -> list[Path]:
+    try:
+        result = subprocess.run(
+            ["git", "-C", str(ROOT), "ls-files"],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return [p for p in ROOT.rglob("*") if p.is_file()]
+
+    paths: list[Path] = []
+    for raw in result.stdout.splitlines():
+        raw = raw.strip()
+        if not raw:
+            continue
+        path = ROOT / raw
+        if path.is_file():
+            paths.append(path)
+    return paths
+
+
 def scan_repo_for_secrets(secret_file_hits: set[str]) -> None:
     exclude_dirs = {".git", "__pycache__"}
     exclude_files = {".pyc"}
-    for path in ROOT.rglob("*"):
-        if not path.is_file():
-            continue
+    for path in iter_tracked_files():
         if any(part in exclude_dirs for part in path.parts):
             continue
         if path.suffix in exclude_files:
@@ -97,6 +118,22 @@ def scan_repo_for_secrets(secret_file_hits: set[str]) -> None:
         except UnicodeDecodeError:
             continue
         check_secret_patterns(path, text, secret_file_hits)
+
+
+def extract_h2_headings(text: str) -> set[str]:
+    lines = text.replace("\r\n", "\n").split("\n")
+    headings: set[str] = set()
+    in_fence = False
+    for line in lines:
+        stripped = line.strip()
+        if stripped.startswith("```"):
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            continue
+        if stripped.startswith("## "):
+            headings.add(stripped)
+    return headings
 
 
 def main() -> int:
@@ -188,7 +225,7 @@ def main() -> int:
         if not isinstance(tags, list):
             errors.append(f"{path_value}: frontmatter 'tags' must be a list")
 
-        heading_lines = {line.strip() for line in text.replace("\r\n", "\n").split("\n")}
+        heading_lines = extract_h2_headings(text)
         for heading in REQUIRED_HEADINGS:
             if heading not in heading_lines:
                 errors.append(f"{path_value}: missing required heading '{heading}'")
