@@ -33,6 +33,16 @@ def slugify(value: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", value.lower()).strip("-")
 
 
+def parse_inline_list(value: str) -> list[str] | None:
+    stripped = value.strip()
+    if not (stripped.startswith("[") and stripped.endswith("]")):
+        return None
+    inner = stripped[1:-1].strip()
+    if not inner:
+        return []
+    return [item.strip().strip("'\"") for item in inner.split(",") if item.strip()]
+
+
 def parse_frontmatter(text: str) -> dict[str, object]:
     if not text.startswith("---\n"):
         return {}
@@ -57,6 +67,8 @@ def parse_frontmatter(text: str) -> dict[str, object]:
         current_key = key
         if value == "":
             parsed[key] = []
+        elif key == "tags":
+            parsed[key] = parse_inline_list(value) or value
         else:
             parsed[key] = value
     return parsed
@@ -133,7 +145,11 @@ def main() -> int:
             errors.append(f"missing skill file: {path_value}")
             continue
 
-        text = skill_path.read_text(encoding="utf-8")
+        try:
+            text = skill_path.read_text(encoding="utf-8")
+        except UnicodeDecodeError:
+            errors.append(f"{path_value}: skill file is not valid UTF-8 text")
+            continue
 
         frontmatter = parse_frontmatter(text)
         if not frontmatter:
@@ -156,6 +172,17 @@ def main() -> int:
             errors.append(
                 f"{path_value}: folder '{folder_name}' should match slugified name '{expected_folder}'"
             )
+
+        module = entry.get("module", "")
+        file_module = skill_path.parent.parent.name
+        if module != file_module:
+            errors.append(
+                f"{path_value}: catalog module '{module}' does not match path module '{file_module}'"
+            )
+
+        tags = frontmatter.get("tags")
+        if not isinstance(tags, list):
+            errors.append(f"{path_value}: frontmatter 'tags' must be a list")
 
         for heading in REQUIRED_HEADINGS:
             if heading not in text:

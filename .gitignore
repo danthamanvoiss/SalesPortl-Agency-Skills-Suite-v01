@@ -10,9 +10,15 @@ context/CLIENT-CONTEXT.md
 exports/
 customer-exports/
 reports/generated/
-*.csv
-*.xlsx
-*.jsonl
+exports/**/*.csv
+exports/**/*.xlsx
+exports/**/*.jsonl
+customer-exports/**/*.csv
+customer-exports/**/*.xlsx
+customer-exports/**/*.jsonl
+reports/generated/**/*.csv
+reports/generated/**/*.xlsx
+reports/generated/**/*.jsonl
 
 # Python cache
 __pycache__/
