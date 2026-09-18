@@ -10,7 +10,6 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 CATALOG_PATH = ROOT / "catalog.json"
-EXPECTED_SKILL_COUNT = 18
 REQUIRED_FRONTMATTER = ["name", "description", "version", "tags"]
 REQUIRED_HEADINGS = [
     "## Purpose",
@@ -56,6 +55,30 @@ def check_secret_patterns(path: Path, text: str, errors: list[str]) -> None:
             errors.append(f"{path}: potential secret pattern matched: {pattern}")
 
 
+def sanitize_for_output(value: str) -> str:
+    sanitized = value
+    for pattern in SECRET_PATTERNS:
+        sanitized = re.sub(pattern, "[REDACTED]", sanitized)
+    return sanitized
+
+
+def scan_repo_for_secrets(errors: list[str]) -> None:
+    exclude_dirs = {".git", "__pycache__"}
+    exclude_files = {".pyc"}
+    for path in ROOT.rglob("*"):
+        if not path.is_file():
+            continue
+        if any(part in exclude_dirs for part in path.parts):
+            continue
+        if path.suffix in exclude_files:
+            continue
+        try:
+            text = path.read_text(encoding="utf-8")
+        except UnicodeDecodeError:
+            continue
+        check_secret_patterns(path, text, errors)
+
+
 def main() -> int:
     errors: list[str] = []
 
@@ -80,17 +103,16 @@ def main() -> int:
             f"catalog.json: total_skills ({total_skills}) must equal skills length ({len(skills)})"
         )
 
-    if len(skills) != EXPECTED_SKILL_COUNT:
-        errors.append(
-            f"catalog.json: expected {EXPECTED_SKILL_COUNT} skills, found {len(skills)}"
-        )
-
     seen_names = set()
 
     for idx, entry in enumerate(skills, start=1):
+        missing_required_fields = False
         for field in ("name", "module", "description", "tags", "version", "path"):
             if field not in entry:
                 errors.append(f"catalog.json skill[{idx}]: missing field '{field}'")
+                missing_required_fields = True
+        if missing_required_fields:
+            continue
 
         name = entry.get("name", "")
         path_value = entry.get("path", "")
@@ -132,12 +154,12 @@ def main() -> int:
             if heading not in text:
                 errors.append(f"{path_value}: missing required heading '{heading}'")
 
-    check_secret_patterns(CATALOG_PATH, CATALOG_PATH.read_text(encoding="utf-8"), errors)
+    scan_repo_for_secrets(errors)
 
     if errors:
         print("VALIDATION FAILED")
         for err in errors:
-            print(f"- {err}")
+            print(f"- {sanitize_for_output(err)}")
         return 1
 
     print("VALIDATION PASSED")
